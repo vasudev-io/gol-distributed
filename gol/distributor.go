@@ -2,6 +2,7 @@ package gol
 
 import (
 	"flag"
+	"fmt"
 	"net/rpc"
 	"strconv"
 	"uk.ac.bris.cs/gameoflife/stubs"
@@ -84,13 +85,13 @@ func distributor(p Params, c distributorChannels) {
 	flag.Parse()
 	client, b := rpc.Dial("tcp", server)
 	if b != nil {
-		print("there is no connrction")
+		fmt.Println(b)
 	}
 	defer client.Close()
 
 	resval := makeCall(*client, world, p)
 	world = resval.World
-	turn = resval.Turns
+	turn = resval.P.Turns
 
 	// report how many turns are over and how many alivers are remaining after each turn
 	// and send that to a channel which goes into the FinalTurnComplete

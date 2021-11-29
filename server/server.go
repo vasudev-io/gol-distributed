@@ -19,7 +19,7 @@ func (s *GameofLifeOperations) Process(req stubs.Request, res *stubs.Response) (
 	// take the parameters from the req util thingy
 	turn := 0
 
-	for turn < req.Turns {
+	for turn < req.P.Turns {
 		req.World = calculateNextState(req.P, req.World)
 
 		turn++
@@ -27,7 +27,7 @@ func (s *GameofLifeOperations) Process(req stubs.Request, res *stubs.Response) (
 
 	// send the next turn stuff thru to the response struct
 	res.World = req.World
-	res.Turns = turn
+	res.P.Turns = turn
 
 	return
 }

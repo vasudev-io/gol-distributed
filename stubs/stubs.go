@@ -11,7 +11,6 @@ type Params struct {
 type Response struct {
 	World [][]byte
 	P     Params
-	Turns int
 
 	//gol.State
 }
@@ -19,7 +18,6 @@ type Response struct {
 type Request struct {
 	World [][]byte
 	P     Params
-	Turns int
 
 	//gol.State
 }

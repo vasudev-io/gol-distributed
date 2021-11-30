@@ -1,7 +1,5 @@
 package stubs
 
-import "uk.ac.bris.cs/gameoflife/util"
-
 var Processsor = "GameofLifeOperations.Process"
 var GetAlive = "GameofLifeOperations.GetAlive"
 
@@ -12,9 +10,9 @@ type Params struct {
 	ImageHeight int
 }
 type Response struct {
-	World   [][]byte
-	Alivers []util.Cell //not sure
-	P       Params
+	World [][]byte
+	//	Alivers []util.Cell //not sure
+	P Params
 
 	//gol.State
 }
@@ -32,4 +30,3 @@ type AliveResp struct {
 	Alive_Cells int
 	Turns       int
 }
-

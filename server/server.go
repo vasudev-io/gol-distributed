@@ -13,38 +13,26 @@ import (
 
 type GameofLifeOperations struct{}
 
-var alivecells int
+//var alivecells int
 var lock sync.Mutex
-var globalturn = 1
 
 func (s *GameofLifeOperations) Process(req stubs.Request, res *stubs.Response) (err error) {
 
 	// for loop to take the request and run the distributor code thru it and then send this code off to
 	// the response
 	// take the parameters from the req util thingy
-	turn := 0
 	var world = req.World
-	for turn < req.P.Turns {
-		world = calculateNextState(req.P, world)
-		turn++
-		lock.Lock()
-		globalturn = turn
-		//stage 2 addition
-		alivecells = len(calculateAliveCells(req.P, req.World))
-		lock.Unlock()
-
-	}
+	world = calculateNextState(req.P, world)
 
 	// send the next turn stRequestuff thru to the response struct
 	res.World = world
-	res.P.Turns = turn
 
 	return
 }
-func (s *GameofLifeOperations) GetAlive(req stubs.EmptyReq, res stubs.AliveResp) (err error) {
+func (s *GameofLifeOperations) GetAlivers(req stubs.Request, res *stubs.AliveResp) (err error) {
 	lock.Lock()
-	res.Alive_Cells = alivecells
-	res.Turns = globalturn
+	res.Alive_Cells = len(calculateAliveCells(req.P, req.World))
+	//res.Turns = globalturn
 	lock.Unlock()
 	return
 }

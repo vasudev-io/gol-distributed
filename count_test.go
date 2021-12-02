@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"testing"
 	"time"
+
 	"uk.ac.bris.cs/gameoflife/gol"
 	"uk.ac.bris.cs/gameoflife/util"
 )
@@ -15,7 +16,7 @@ import (
 // You can manually check your counts by looking at CSVs provided in check/alive
 func TestAlive(t *testing.T) {
 	p := gol.Params{
-		Turns:       100,
+		Turns:       100000000,
 		Threads:     8,
 		ImageWidth:  512,
 		ImageHeight: 512,

@@ -77,6 +77,24 @@ func distributor(p Params, c distributorChannels) {
 	var turn = 0
 	//mutex := sync.Mutex{}
 
+	go func() {
+		for {
+			select {
+
+			case <-tk.C:
+				//fmt.Println("it is iterating")
+				//mutex.Lock()
+				c.events <- AliveCellsCount{turn, len(calculateAliveCells(p, world))}
+				//mutex.Unlock()
+				//if turn == p.Turns {
+				//case turn == p.Turns:
+				//
+				//
+
+			}
+		}
+
+	}()
 	for turn < p.Turns {
 
 		world = makeCall(client, world, p)
@@ -86,26 +104,8 @@ func distributor(p Params, c distributorChannels) {
 		turn++
 
 	}
-	//go func() {
-	//for {
-	select {
-
-	case <-tk.C:
-		//fmt.Println("it is iterating")
-		//mutex.Lock()
-		c.events <- AliveCellsCount{turn, len(calculateAliveCells(p, world))}
-		//mutex.Unlock()
-		//if turn == p.Turns {
-		//case turn == p.Turns:
-		//
-		//
-	default:
-		break
-	}
-	//}
-
-	//}()
 	tk.Stop()
+
 	//}
 
 	//select {

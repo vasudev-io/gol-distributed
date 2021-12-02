@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"net"
 	"net/rpc"
-	"sync"
+	"os"
 	"time"
 	"uk.ac.bris.cs/gameoflife/stubs"
 	"uk.ac.bris.cs/gameoflife/util"
@@ -14,12 +14,8 @@ import (
 type GameofLifeOperations struct{}
 
 //var alivecells int
-var lock sync.Mutex
 
 func (s *GameofLifeOperations) Process(req stubs.Request, res *stubs.Response) (err error) {
-
-	// for loop to take the request and run the distributor code thru it and then send this code off to
-	// the response
 	// take the parameters from the req util thingy
 	var world = req.World
 	world = calculateNextState(req.P, world)
@@ -30,10 +26,27 @@ func (s *GameofLifeOperations) Process(req stubs.Request, res *stubs.Response) (
 	return
 }
 func (s *GameofLifeOperations) GetAlivers(req stubs.Request, res *stubs.AliveResp) (err error) {
-	lock.Lock()
-	res.Alive_Cells = len(calculateAliveCells(req.P, req.World))
-	//res.Turns = globalturn
-	lock.Unlock()
+	res.Alive_Cells = calculateAliveCells(req.P, req.World)
+	return
+}
+func (s *GameofLifeOperations) GetCellsFlipped(req stubs.Request2, res *stubs.AliveResp) (err error) {
+	newWorldData := req.NewWorld
+	world := req.World
+	returnable := make([]util.Cell, 0)
+	for row := 0; row < req.P.ImageHeight; row++ {
+		for col := 0; col < req.P.ImageWidth; col++ {
+			if newWorldData[row][col] != world[row][col] {
+				cell := util.Cell{X: row, Y: col}
+				returnable = append(returnable, cell)
+			}
+		}
+	}
+	//c.events <- TurnComplete{CompletedTurns: turn}
+	res.Alive_Cells = returnable
+	return
+}
+func (s *GameofLifeOperations) CancelServer(req stubs.EmptyReq, res *stubs.ServerCancelled) (err error) {
+	os.Exit(0)
 	return
 }
 
@@ -43,7 +56,12 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	rpc.Register(&GameofLifeOperations{})
 	listener, _ := net.Listen("tcp", ":"+*pAddr)
-	defer listener.Close()
+	defer func(listener net.Listener) {
+		err := listener.Close()
+		if err != nil {
+
+		}
+	}(listener)
 	rpc.Accept(listener)
 }
 

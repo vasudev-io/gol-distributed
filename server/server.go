@@ -5,30 +5,48 @@ import (
 	"math/rand"
 	"net"
 	"net/rpc"
+	"os"
 	"time"
 	"uk.ac.bris.cs/gameoflife/stubs"
+	"uk.ac.bris.cs/gameoflife/util"
 )
 
 type GameofLifeOperations struct{}
 
+//var alivecells int
+
 func (s *GameofLifeOperations) Process(req stubs.Request, res *stubs.Response) (err error) {
-
-	// for loop to take the request and run the distributor code thru it and then send this code off to
-	// the response
-
 	// take the parameters from the req util thingy
-	turn := 0
+	var world = req.World
+	world = calculateNextState(req.P, world)
 
-	for turn < req.P.Turns {
-		req.World = calculateNextState(req.P, req.World)
+	// send the next turn stRequestuff thru to the response struct
+	res.World = world
 
-		turn++
+	return
+}
+func (s *GameofLifeOperations) GetAlivers(req stubs.Request, res *stubs.AliveResp) (err error) {
+	res.Alive_Cells = calculateAliveCells(req.P, req.World)
+	return
+}
+func (s *GameofLifeOperations) GetCellsFlipped(req stubs.Request2, res *stubs.AliveResp) (err error) {
+	newWorldData := req.NewWorld
+	world := req.World
+	returnable := make([]util.Cell, 0)
+	for row := 0; row < req.P.ImageHeight; row++ {
+		for col := 0; col < req.P.ImageWidth; col++ {
+			if newWorldData[row][col] != world[row][col] {
+				cell := util.Cell{X: row, Y: col}
+				returnable = append(returnable, cell)
+			}
+		}
 	}
-
-	// send the next turn stuff thru to the response struct
-	res.World = req.World
-	res.P.Turns = turn
-
+	//c.events <- TurnComplete{CompletedTurns: turn}
+	res.Alive_Cells = returnable
+	return
+}
+func (s *GameofLifeOperations) CancelServer(req stubs.EmptyReq, res *stubs.ServerCancelled) (err error) {
+	os.Exit(0)
 	return
 }
 
@@ -38,7 +56,12 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	rpc.Register(&GameofLifeOperations{})
 	listener, _ := net.Listen("tcp", ":"+*pAddr)
-	defer listener.Close()
+	defer func(listener net.Listener) {
+		err := listener.Close()
+		if err != nil {
+
+		}
+	}(listener)
 	rpc.Accept(listener)
 }
 
@@ -90,4 +113,25 @@ func calculateNextState(p stubs.Params, world [][]byte) [][]byte {
 	}
 
 	return testerworld
+}
+func calculateAliveCells(p stubs.Params, world [][]byte) []util.Cell {
+
+	var alivecells []util.Cell
+
+	for row := 0; row < p.ImageWidth; row++ {
+		for col := 0; col < p.ImageHeight; col++ {
+
+			pair := util.Cell{}
+			currentCell := world[row][col]
+
+			if currentCell == 255 {
+				pair.X = col
+				pair.Y = row
+				alivecells = append(alivecells, pair)
+
+			}
+		}
+	}
+
+	return alivecells
 }

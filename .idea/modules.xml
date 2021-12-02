@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/gol-skeleton-master.iml" filepath="$PROJECT_DIR$/.idea/gol-skeleton-master.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/fixdistrib.iml" filepath="$PROJECT_DIR$/.idea/fixdistrib.iml" />
     </modules>
   </component>
 </project>

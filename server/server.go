@@ -13,8 +13,7 @@ import (
 
 type GameofLifeOperations struct{}
 
-//var alivecells int
-
+//executes CalculateNextState and returns the new state via response to client
 func (s *GameofLifeOperations) Process(req stubs.Request, res *stubs.Response) (err error) {
 	// take the parameters from the req util thingy
 	var world = req.World
@@ -25,10 +24,15 @@ func (s *GameofLifeOperations) Process(req stubs.Request, res *stubs.Response) (
 
 	return
 }
+
+//executes calculatealivecell and returns the new alive cells slice via response to client
+
 func (s *GameofLifeOperations) GetAlivers(req stubs.Request, res *stubs.AliveResp) (err error) {
 	res.Alive_Cells = calculateAliveCells(req.P, req.World)
 	return
 }
+
+//compares world with new world and returns cells flipped via response
 func (s *GameofLifeOperations) GetCellsFlipped(req stubs.Request2, res *stubs.AliveResp) (err error) {
 	newWorldData := req.NewWorld
 	world := req.World
@@ -45,16 +49,21 @@ func (s *GameofLifeOperations) GetCellsFlipped(req stubs.Request2, res *stubs.Al
 	res.Alive_Cells = returnable
 	return
 }
+
+//take in empty request and terminates server
 func (s *GameofLifeOperations) CancelServer(req stubs.EmptyReq, res *stubs.ServerCancelled) (err error) {
 	os.Exit(0)
 	return
 }
 
 func main() {
+	//initializes the listening port
 	pAddr := flag.String("port", "8030", "Port to listen on")
 	flag.Parse()
 	rand.Seed(time.Now().UnixNano())
+	//registers the GoL operations for them to be used by client/distributor
 	rpc.Register(&GameofLifeOperations{})
+	//listens to port for any input from client
 	listener, _ := net.Listen("tcp", ":"+*pAddr)
 	defer func(listener net.Listener) {
 		err := listener.Close()
@@ -62,19 +71,11 @@ func main() {
 
 		}
 	}(listener)
+	//accepts connection to listener and serves requests for each incoming connection
 	rpc.Accept(listener)
 }
 
-/* Super-Secret `reversing a string' method we can't allow clients to see.
-func ReverseString(s string, i int) string {
-	time.Sleep(time.Duration(rand.Intn(i))* time.Second)
-	runes := []rune(s)
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
-	}
-	return string(runes)
-} */
-
+//calculates the next state by giving in the world and params to get the image height and width
 func calculateNextState(p stubs.Params, world [][]byte) [][]byte {
 
 	//making a separate world to check without disturbing the actual world
@@ -114,6 +115,8 @@ func calculateNextState(p stubs.Params, world [][]byte) [][]byte {
 
 	return testerworld
 }
+
+//calculates the alive cells and returns as []util.Cell with the co-ordinates of them
 func calculateAliveCells(p stubs.Params, world [][]byte) []util.Cell {
 
 	var alivecells []util.Cell

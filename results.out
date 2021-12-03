@@ -1,15 +1,9 @@
 goos: linux
 goarch: amd64
 pkg: uk.ac.bris.cs/gameoflife
-BenchmarkGol/512x512x100-1-12         	       1	3794269198 ns/op
-BenchmarkGol/512x512x100-1-12         	panic: runtime error: index out of range [0] with length 0
-
-goroutine 28 [running]:
-uk.ac.bris.cs/gameoflife/gol.distributor(0x64, 0x1, 0x200, 0x200, 0xc0000207e0, 0xc000020840, 0xc0000208a0, 0xc000020900, 0xc0000209c0, 0xc000020960, ...)
-	/home/mb20732/fixdistrib/gol/distributor.go:315 +0x1325
-uk.ac.bris.cs/gameoflife/gol.Run(0x64, 0x1, 0x200, 0x200, 0xc0000207e0, 0x0)
-	/home/mb20732/fixdistrib/gol/gol.go:39 +0x285
-created by uk.ac.bris.cs/gameoflife.BenchmarkGol.func1
-	/home/mb20732/fixdistrib/bench_test.go:28 +0xe8
-exit status 2
-FAIL	uk.ac.bris.cs/gameoflife	10.331s
+BenchmarkGol/512x512x100-1-12         	       1	3756024814 ns/op
+BenchmarkGol/512x512x100-1-12         	       1	3713772846 ns/op
+BenchmarkGol/512x512x100-1-12         	       1	3773387286 ns/op
+BenchmarkGol/512x512x100-1-12         	       1	3755602887 ns/op
+BenchmarkGol/512x512x100-1-12         	       1	3680951170 ns/op
+ok  	uk.ac.bris.cs/gameoflife	37.802s
